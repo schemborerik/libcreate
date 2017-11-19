@@ -67,6 +67,8 @@ int main(int argc, char** argv) {
 
       recvfrom(sock_fd, (uint8_t*)&command, sizeof(command), 0, NULL, 0);
 
+      std::cout << "Trans vel: " << command.trans_vel << "  Ang vel: " << command.ang_vel << std::endl;
+
       robot->drive(command.trans_vel, command.ang_vel);
 
       usleep(1000 * 100); //10hz
