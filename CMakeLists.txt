@@ -61,6 +61,7 @@ target_link_libraries(create
 add_executable(create_demo examples/create_demo.cpp)
 add_executable(bumper_example examples/bumper_example.cpp)
 add_executable(odom_example examples/odom_example.cpp)
+add_executable(joystick_control examples/joystick_control.cpp)
 
 # Specify libraries to link executable targets against
 target_link_libraries(create_demo
@@ -74,7 +75,12 @@ target_link_libraries(bumper_example
 target_link_libraries(odom_example
   ${Boost_LIBRARIES}
   create
-)
+  )
+target_link_libraries(joystick_control
+  ${Boost_LIBRARIES}
+  create
+  )
+
 
 ###########
 # Install #
