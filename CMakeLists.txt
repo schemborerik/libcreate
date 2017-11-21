@@ -63,6 +63,8 @@ add_executable(bumper_example examples/bumper_example.cpp)
 add_executable(odom_example examples/odom_example.cpp)
 add_executable(joystick_control examples/joystick_control.cpp)
 
+set_property(TARGET joystick_control PROPERTY COMPILE_OPTIONS "-std=c++11")
+
 # Specify libraries to link executable targets against
 target_link_libraries(create_demo
   ${Boost_LIBRARIES}
@@ -80,6 +82,7 @@ target_link_libraries(joystick_control
   ${Boost_LIBRARIES}
   create
   )
+
 
 
 ###########
