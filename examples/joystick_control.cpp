@@ -144,13 +144,6 @@ int main(int argc, char** argv)
   // Quit when center "Clean" button pressed
   while (!robot->isCleanButtonPressed())
   {
-      static int16_t left_duty;
-      static int16_t right_duty;
-
-      static float last_left_wheel_dist = 0;
-      static float last_right_wheel_dist = 0;
-
-
       ramp_vel(s_current_command.left_wheel_vel_mps,
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_left_status.current_vel_mps);
@@ -158,36 +151,48 @@ int main(int argc, char** argv)
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_right_status.current_vel_mps);
 
-      float left_measured_vel_mps = (robot->getLeftWheelDistance() - last_left_wheel_dist) * CONTROL_LOOP_HZ;
-      float right_measured_vel_mps = (robot->getRightWheelDistance() - last_right_wheel_dist) * CONTROL_LOOP_HZ;
-      last_left_wheel_dist = robot->getLeftWheelDistance();
-      last_right_wheel_dist = robot->getRightWheelDistance();
-
-
-      pid_update(s_left_status.current_vel_mps,
-                 left_measured_vel_mps,
-                 s_current_command.p_gain,
-                 s_current_command.i_gain,
-                 s_left_status.accum_error,
-                 left_duty);
-      pid_update(s_right_status.current_vel_mps,
-                 right_measured_vel_mps,
-                 s_current_command.p_gain,
-                 s_current_command.i_gain,
-                 s_right_status.accum_error,
-                 right_duty);
-
-      robot->driveWheelsPWM(left_duty, right_duty);
-
-      static uint32_t ping = 0;
-      if (++ping >= CONTROL_LOOP_HZ)
+      if (s_current_command.p_gain == 0 && s_current_command.i_gain == 0)
       {
-          ping = 0;
-          std::cout << "Left measured: " << left_measured_vel_mps << std::endl;
-          std::cout << "current_vel_mps: " << s_left_status.current_vel_mps << std::endl;
-          std::cout << "left_duty" << left_duty << std::endl;
+          robot->driveWheels(s_left_status.current_vel_mps, s_right_status.current_vel_mps);
       }
+      else
+      {
+          static int16_t left_duty;
+          static int16_t right_duty;
 
+          static float last_left_wheel_dist = 0;
+          static float last_right_wheel_dist = 0;
+
+          float left_measured_vel_mps = (robot->getLeftWheelDistance() - last_left_wheel_dist) * CONTROL_LOOP_HZ;
+          float right_measured_vel_mps = (robot->getRightWheelDistance() - last_right_wheel_dist) * CONTROL_LOOP_HZ;
+          last_left_wheel_dist = robot->getLeftWheelDistance();
+          last_right_wheel_dist = robot->getRightWheelDistance();
+
+
+          pid_update(s_left_status.current_vel_mps,
+                     left_measured_vel_mps,
+                     s_current_command.p_gain,
+                     s_current_command.i_gain,
+                     s_left_status.accum_error,
+                     left_duty);
+          pid_update(s_right_status.current_vel_mps,
+                     right_measured_vel_mps,
+                     s_current_command.p_gain,
+                     s_current_command.i_gain,
+                     s_right_status.accum_error,
+                     right_duty);
+
+          robot->driveWheelsPWM(left_duty, right_duty);
+
+          static uint32_t ping = 0;
+          if (++ping >= CONTROL_LOOP_HZ)
+          {
+              ping = 0;
+              std::cout << "Left measured: " << left_measured_vel_mps << std::endl;
+              std::cout << "current_vel_mps: " << s_left_status.current_vel_mps << std::endl;
+              std::cout << "left_duty" << left_duty << std::endl;
+          }
+      }
 
       usleep(1000 * CONTROL_LOOP_UPDATE_INTERVAL_MS); //66hz
   }
