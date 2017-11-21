@@ -143,6 +143,7 @@ int main(int argc, char** argv)
       static int16_t left_duty;
       static int16_t right_duty;
 
+
       ramp_vel(s_current_command.left_wheel_vel_mps,
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_left_status.current_vel_mps);
@@ -166,7 +167,19 @@ int main(int argc, char** argv)
                  s_right_status.accum_error,
                  right_duty);
 
-      usleep(1000 * CONTROL_LOOP_UPDATE_INTERVAL_MS); //15hz
+      robot->driveWheelsPWM(left_duty, right_duty);
+
+      static uint32_t ping = 0;
+      if (++ping == CONTROL_LOOP_HZ)
+      {
+          ping = 0;
+          std::cout << "Left measured: " << left_measured_vel_mps << std::endl;
+          std::cout << "current_vel_mps: " << s_left_status.current_vel_mps << std::endl;
+          std::cout << "left_duty" << left_duty << std::endl;
+      }
+
+
+      usleep(1000 * CONTROL_LOOP_UPDATE_INTERVAL_MS); //66hz
   }
 
   std::cout << "Stopping Create." << std::endl;
