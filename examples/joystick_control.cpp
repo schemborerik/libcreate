@@ -56,8 +56,7 @@ static void joystick_thread_execute(void *args)
 
     while (1)
     {
-        JoystickCommand command;
-        recvfrom(sock_fd, (uint8_t*)&command, sizeof(command), 0, NULL, 0);
+        recvfrom(sock_fd, (uint8_t*)&s_current_command, sizeof(s_current_command), 0, NULL, 0);
         std::cout << "Received command" << std::endl;
         std::cout << command.left_wheel_vel_mps << std::endl;
         std::cout << command.right_wheel_vel_mps << std::endl;
