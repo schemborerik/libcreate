@@ -426,11 +426,19 @@ namespace create {
 
 bool Create::driveWheelsPWM(const int16_t& leftWheelPWM, const int16_t& rightWheelPWM)
 {
+    static const int16_t MAX_PWM = 255;
+    static const int16_t MIN_PWM = -255;
+
+    const int16_t boundedLeftPWM = BOUND_CONST(leftWheelPWM, MIN_PWM, MAX_PWM);
+    const int16_t boundedRightPWM = BOUND_CONST(rightWheelPWM, MIN_PWM, MAX_PWM);
+
+
+
     uint8_t cmd[5] = { OC_DRIVE_PWM,
-                       rightWheelPWM >> 8,
-                       rightWheelPWM & 0xff,
-                       leftWheelPWM >> 8,
-                       leftWheelPWM & 0xff
+                       boundedRightPWM >> 8,
+                       boundedRightPWM & 0xff,
+                       boundedLeftPWM >> 8,
+                       boundedLeftPWM & 0xff
     };
     return serial->send(cmd, 5);
 }
