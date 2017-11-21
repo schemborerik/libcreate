@@ -58,6 +58,7 @@ static void joystick_thread_execute(void *args)
     {
         JoystickCommand command;
         recvfrom(sock_fd, (uint8_t*)&command, sizeof(command), 0, NULL, 0);
+        std::cout << "Received command" << std::endl;
     }
 
     close(sock_fd);
