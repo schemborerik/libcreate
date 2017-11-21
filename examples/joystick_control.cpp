@@ -143,6 +143,9 @@ int main(int argc, char** argv)
       static int16_t left_duty;
       static int16_t right_duty;
 
+      static float last_left_wheel_dist = 0;
+      static float last_right_wheel_dist = 0;
+
 
       ramp_vel(s_current_command.left_wheel_vel_mps,
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
@@ -151,8 +154,11 @@ int main(int argc, char** argv)
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_right_status.current_vel_mps);
 
-      float left_measured_vel_mps = robot->getLeftWheelDistance() * CONTROL_LOOP_HZ;
-      float right_measured_vel_mps = robot->getRightWheelDistance() * CONTROL_LOOP_HZ;
+      float left_measured_vel_mps = (robot->getLeftWheelDistance() - last_left_wheel_dist) * CONTROL_LOOP_HZ;
+      float right_measured_vel_mps = (robot->getRightWheelDistance() - last_right_wheel_dist) * CONTROL_LOOP_HZ;
+      last_left_wheel_dist = robot->getLeftWheelDistance();
+      last_right_wheel_dist = robot->getRightWheelDistance();
+
 
       pid_update(s_left_status.current_vel_mps,
                  left_measured_vel_mps,
