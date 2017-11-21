@@ -199,6 +199,7 @@ int main(int argc, char** argv)
 
   std::cout << "Stopping Create." << std::endl;
 
+  robot->setMode(create::MODE_OFF);
 
   robot->disconnect();
   delete robot;
