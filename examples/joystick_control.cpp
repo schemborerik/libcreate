@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <thread>
 
@@ -94,6 +95,9 @@ static void pid_update(float target_vel_mps, float measured_vel_mps, float p_gai
         }
         output = p_gain * error;
         output += i_gain * accum_error;
+
+        output = std::min(output, MAX_OUTPUT);
+        output = std::max(output, static_cast<int16_t>(-1*MAX_OUTPUT));
     }
     else
     {
