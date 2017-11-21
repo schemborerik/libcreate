@@ -154,6 +154,14 @@ int main(int argc, char** argv)
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_right_status.current_vel_mps);
 
+      static float last_left_wheel_dist = 0;
+      static float last_right_wheel_dist = 0;
+
+      float left_measured_vel_mps = (robot->getLeftWheelDistance() - last_left_wheel_dist) * CONTROL_LOOP_HZ;
+      float right_measured_vel_mps = (robot->getRightWheelDistance() - last_right_wheel_dist) * CONTROL_LOOP_HZ;
+      last_left_wheel_dist = robot->getLeftWheelDistance();
+      last_right_wheel_dist = robot->getRightWheelDistance();
+
       if (s_current_command.p_gain == 0 && s_current_command.i_gain == 0)
       {
           robot->driveWheels(s_left_status.current_vel_mps, s_right_status.current_vel_mps);
@@ -162,15 +170,6 @@ int main(int argc, char** argv)
       {
           static int16_t left_duty;
           static int16_t right_duty;
-
-          static float last_left_wheel_dist = 0;
-          static float last_right_wheel_dist = 0;
-
-          float left_measured_vel_mps = (robot->getLeftWheelDistance() - last_left_wheel_dist) * CONTROL_LOOP_HZ;
-          float right_measured_vel_mps = (robot->getRightWheelDistance() - last_right_wheel_dist) * CONTROL_LOOP_HZ;
-          last_left_wheel_dist = robot->getLeftWheelDistance();
-          last_right_wheel_dist = robot->getRightWheelDistance();
-
 
           pid_update(s_left_status.current_vel_mps,
                      left_measured_vel_mps,
@@ -191,7 +190,7 @@ int main(int argc, char** argv)
           auto dur = cur_time - last_time;
           auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-          std::cout << left_duty << " " << ms << std::endl;
+          std::cout << left_duty << " " << left_measured_vel_mps << " " << ms << std::endl;
           last_time = cur_time;
       }
 
