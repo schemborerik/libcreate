@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <thread>
-#include <ctime>
+#include <chrono>
 
 struct JoystickCommand
 {
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
   // Quit when center "Clean" button pressed
   while (!robot->isCleanButtonPressed())
   {
-      static time_t last_time;
+      static std::chrono::high_resolution_clock::time_point last_time;
 
       ramp_vel(s_current_command.left_wheel_vel_mps,
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
@@ -187,10 +187,11 @@ int main(int argc, char** argv)
 
           robot->driveWheelsPWM(left_duty, right_duty);
 
-          time_t cur_time;
-          time(&cur_time);
+          auto cur_time = std::chrono::high_resolution_clock::now();
+          auto dur = cur_time - last_time;
+          auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-          std::cout << left_duty << " " << difftime(cur_time, last_time) << std::endl;
+          std::cout << left_duty << " " << ms << std::endl;
           last_time = cur_time;
       }
 
