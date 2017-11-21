@@ -59,6 +59,11 @@ static void joystick_thread_execute(void *args)
         JoystickCommand command;
         recvfrom(sock_fd, (uint8_t*)&command, sizeof(command), 0, NULL, 0);
         std::cout << "Received command" << std::endl;
+        std::cout << command.left_wheel_vel_mps << std::endl;
+        std::cout << command.right_wheel_vel_mps << std::endl;
+        std::cout << command.accel_mpss << std::endl;
+        std::cout << command.p_gain << std::endl;
+        std::cout <<  command.i_gain << std::endl;
     }
 
     close(sock_fd);
@@ -171,14 +176,14 @@ int main(int argc, char** argv)
 
       robot->driveWheelsPWM(left_duty, right_duty);
 
-      /*static uint32_t ping = 0;
-      if (++ping == CONTROL_LOOP_HZ)
+      static uint32_t ping = 0;
+      if (++ping >= CONTROL_LOOP_HZ)
       {
-      ping = 0;*/
+          ping = 0;
           std::cout << "Left measured: " << left_measured_vel_mps << std::endl;
           std::cout << "current_vel_mps: " << s_left_status.current_vel_mps << std::endl;
           std::cout << "left_duty" << left_duty << std::endl;
-          // }
+      }
 
 
       usleep(1000 * CONTROL_LOOP_UPDATE_INTERVAL_MS); //66hz
