@@ -26,7 +26,7 @@ struct WheelStatus
     float accum_error;
 };
 
-static const uint32_t CONTROL_LOOP_UPDATE_INTERVAL_MS = 15;
+static const uint32_t CONTROL_LOOP_UPDATE_INTERVAL_MS = 16;
 static const float CONTROL_LOOP_HZ = 1000.0f/CONTROL_LOOP_UPDATE_INTERVAL_MS;
 
 static create::Create* robot;
