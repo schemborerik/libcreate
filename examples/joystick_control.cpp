@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <thread>
+#include <ctime>
 
 struct JoystickCommand
 {
@@ -144,6 +145,8 @@ int main(int argc, char** argv)
   // Quit when center "Clean" button pressed
   while (!robot->isCleanButtonPressed())
   {
+      static time_t last_time;
+
       ramp_vel(s_current_command.left_wheel_vel_mps,
                s_current_command.accel_mpss / CONTROL_LOOP_HZ,
                s_left_status.current_vel_mps);
@@ -184,14 +187,11 @@ int main(int argc, char** argv)
 
           robot->driveWheelsPWM(left_duty, right_duty);
 
-          static uint32_t ping = 0;
-          if (++ping >= CONTROL_LOOP_HZ)
-          {
-              ping = 0;
-              std::cout << "Left measured: " << left_measured_vel_mps << std::endl;
-              std::cout << "current_vel_mps: " << s_left_status.current_vel_mps << std::endl;
-              std::cout << "left_duty" << left_duty << std::endl;
-          }
+          time_t cur_time;
+          time(&cur_time);
+
+          std::cout << left_duty << " " << difftime(cur_time, last_time) << std::endl;
+          last_time = cur_time;
       }
 
       usleep(1000 * CONTROL_LOOP_UPDATE_INTERVAL_MS); //66hz
