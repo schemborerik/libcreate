@@ -58,7 +58,7 @@ static void joystick_thread_execute(void *args)
 
     while (1)
     {
-        std::chrono::high_resolution_clock::time_point last_time;
+        auto last_time = std::chrono::high_resolution_clock::now();
 
         recvfrom(sock_fd, (uint8_t*)&s_current_command, sizeof(s_current_command), 0, NULL, 0);
 
