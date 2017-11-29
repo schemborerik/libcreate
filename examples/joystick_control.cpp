@@ -58,7 +58,15 @@ static void joystick_thread_execute(void *args)
 
     while (1)
     {
+        std::chrono::high_resolution_clock::time_point last_time;
+
         recvfrom(sock_fd, (uint8_t*)&s_current_command, sizeof(s_current_command), 0, NULL, 0);
+
+	auto cur_time = std::chrono::high_resolution_clock::now();
+	auto dur = cur_time - last_time;
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
+
+	std::cout << "    Received command time: " << ms << std::endl;
     }
 
     close(sock_fd);
@@ -138,6 +146,9 @@ int main(int argc, char** argv)
 
   usleep(1000000);
 
+  //s_current_command.p_gain = 250;
+  //s_current_command.i_gain = 50;
+
   std::thread joystick_thread(joystick_thread_execute, nullptr);
 
   std::cout << "Entering control loop" << std::endl;
@@ -164,6 +175,7 @@ int main(int argc, char** argv)
 
       if (s_current_command.p_gain == 0 && s_current_command.i_gain == 0)
       {
+	  std::cout << "left: " << s_left_status.current_vel_mps << " " << left_measured_vel_mps << "   right: " << s_right_status.current_vel_mps << " " << right_measured_vel_mps << std::endl;
           robot->driveWheels(s_left_status.current_vel_mps, s_right_status.current_vel_mps);
       }
       else
